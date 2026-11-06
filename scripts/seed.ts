@@ -1,5 +1,10 @@
-import "dotenv/config";
+import { config } from "dotenv";
 import { hash } from "bcryptjs";
+
+// Prefer .env.local (Next.js); .env is optional — do not require it via --env-file
+config({ path: ".env.local" });
+config({ path: ".env" });
+
 import { addDays, setHours, setMinutes, startOfDay } from "date-fns";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
