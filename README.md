@@ -1,6 +1,6 @@
 # CareSlot — Healthcare Appointment Booking (V1 MVP)
 
-Demo app for booking healthcare appointments with **patient**, **clinician**, and **admin** roles.
+Private demo app for booking healthcare appointments with **patient**, **clinician**, and **admin** roles.
 
 > **Compliance note:** Free hosting (Vercel, Neon, etc.) is **not HIPAA-covered**. Use only synthetic demo data. Do not put real protected health information in this stack without a BAA and proper controls.
 
@@ -18,78 +18,32 @@ Demo app for booking healthcare appointments with **patient**, **clinician**, an
 - Cancel / reschedule; statuses: `booked` | `completed` | `cancelled`
 - Admin overview of users, clinicians, and appointments
 
-## Quick start (recommended: free Neon Postgres)
-
-You do **not** need Docker. Neon’s free tier is the easiest path on Windows/macOS/Linux.
-
-1. Create a free project at [neon.tech](https://neon.tech) and copy the connection string (`postgresql://…`).
-2. In the repo:
+## Quick start (Docker Postgres)
 
 ```bash
-npm install
+# 1. Start Postgres
+docker compose up -d
+
+# 2. Env
 cp .env.example .env.local
-```
+# set AUTH_SECRET (e.g. openssl rand -base64 32)
 
-3. Edit `.env.local`:
-
-```env
-DATABASE_URL=postgresql://USER:PASSWORD@HOST/DB?sslmode=require
-AUTH_SECRET=replace-with-a-long-random-string
-AUTH_URL=http://localhost:3000
-```
-
-Generate `AUTH_SECRET` with:
-
-```bash
-# macOS / Linux / Git Bash
-openssl rand -base64 32
-
-# PowerShell
-[Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }) -as [byte[]])
-```
-
-4. Push schema, seed demo users, start the app:
-
-```bash
+# 3. Install + schema + seed
+npm install
 npm run db:push
 npm run db:seed
+
+# 4. Dev server
 npm run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Alternative: Docker Postgres
+### Without Docker
 
-Requires **Docker Desktop running** (Windows/macOS) or Docker Engine (Linux).
+Point `DATABASE_URL` at any Postgres 14+ instance (local or hosted).
 
-```bash
-docker compose up -d
-cp .env.example .env.local
-# set AUTH_SECRET; DATABASE_URL can stay as the compose default
-npm install
-npm run db:push
-npm run db:seed
-npm run dev
-```
-
-Default compose URL:
-
-```env
-DATABASE_URL=postgresql://careslot:careslot@localhost:5432/careslot
-```
-
-### Docker error on Windows
-
-If you see:
-
-```text
-open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified
-```
-
-Docker Desktop is not running (or not installed). Either:
-
-1. **Install/start [Docker Desktop](https://www.docker.com/products/docker-desktop/)**, wait until it says Engine running, then retry `docker compose up -d`, or
-2. **Skip Docker** and use the Neon steps above.
+**Free Neon option:** create a project at [neon.tech](https://neon.tech), copy the connection string into `DATABASE_URL`, then run `npm run db:push` and `npm run db:seed`. Neon’s free tier is fine for demos and is **not** a HIPAA BAA environment.
 
 ## Environment variables
 
@@ -97,26 +51,26 @@ Docker Desktop is not running (or not installed). Either:
 |----------------|----------|--------------------------------------------------|
 | `DATABASE_URL` | yes      | Postgres connection string                       |
 | `AUTH_SECRET`  | yes      | Auth.js secret (`openssl rand -base64 32`)       |
-| `AUTH_URL`     | local/prod | App URL (use `http://localhost:3000` for local) |
+| `AUTH_URL`     | prod     | Public site URL (e.g. `https://your-app.vercel.app`) |
 
 ## Demo logins (after seed)
 
-| Role      | Email                  | Password      |
-|-----------|------------------------|---------------|
-| Admin     | `admin@demo.local`     | `password123` |
-| Clinician | `clinician@demo.local` | `password123` |
-| Patient   | `patient@demo.local`   | `password123` |
+| Role      | Email                 | Password      |
+|-----------|-----------------------|---------------|
+| Admin     | `admin@demo.local`    | `password123` |
+| Clinician | `clinician@demo.local`| `password123` |
+| Patient   | `patient@demo.local`  | `password123` |
 
 ## Scripts
 
-| Script              | Purpose                         |
-|---------------------|---------------------------------|
-| `npm run dev`       | Next.js dev server              |
-| `npm run build`     | Production build                |
-| `npm run start`     | Start production server         |
-| `npm run db:push`   | Push Drizzle schema to Postgres |
-| `npm run db:seed`   | Seed demo users + availability  |
-| `npm run db:studio` | Drizzle Studio                  |
+| Script            | Purpose                          |
+|-------------------|----------------------------------|
+| `npm run dev`     | Next.js dev server               |
+| `npm run build`   | Production build                 |
+| `npm run start`   | Start production server          |
+| `npm run db:push` | Push Drizzle schema to Postgres  |
+| `npm run db:seed` | Seed demo users + availability   |
+| `npm run db:studio` | Drizzle Studio                 |
 
 ## Out of scope (V1)
 
