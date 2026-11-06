@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: careslot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: careslot
+      POSTGRES_PASSWORD: careslot
+      POSTGRES_DB: careslot
+    ports:
+      - "5432:5432"
+    volumes:
+      - careslot_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careslot -d careslot"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  careslot_pg:
